@@ -86,11 +86,23 @@
             </div>
         </div>
     </div>
+
+    {# --- MODIFIED PART --- #}
+    {# Only show leave option for non-public chats where the user is a member #}
     {% if chat_group.members.exists %}
+        <div class="mt-6 flex justify-end"> {# Optional: Div for positioning the button #}
+            {% include 'a_rtchat/partials/modal_chat_leave.html' %}
+        </div>
+    {% endif %}
+    {# --- END MODIFIED PART --- #}
+    {% comment %}
+    <!-- {% if chat_group.members.exists %}
     <a href="{% url 'chatroom-leave' chat_group.group_name %}">
         {% include 'a_rtchat/partials/modal_chat_leave.html' %}
     </a>
-    {% endif %}
+    {% endif %} -->
+
+    {% endcomment %}
 </wrapper>
 
 {% endblock %}
