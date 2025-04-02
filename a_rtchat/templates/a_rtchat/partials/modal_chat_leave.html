@@ -1,3 +1,90 @@
-Exclusive code for my Patreons.
+{# FILE: a_rtchat/templates/a_rtchat/partials/modal_chat_leave.html #}
+{% comment %}
+Requires Alpine.js to be loaded.
+Requires chat_group variable in context for the form action URL.
+Optional: Requires other_user variable in context for a more specific message in private chats.
+Assumes CSS classes like button-red, button-gray exist or uses framework equivalents (e.g., Tailwind).
+{% endcomment %}
 
-https://www.patreon.com/andreasjud
+<div x-data="{ modal_open: false }">
+    <!-- Trigger Button -->
+    <button
+        @click="modal_open = true"
+        type="button"
+        class="py-2 px-4 bg-opacity-100 text-red-500 rounded-md hover:bg-red-500 text-sm transition duration-150 ease-in-out" {# Example Tailwind styling for outline button #}
+        {# Or use your existing class: class="button-outline-red text-sm" #}
+    >
+        Leave Chat
+    </button>
+
+    <!-- Modal Background -->
+    <div
+        x-show="modal_open"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-40 bg-gray-800 bg-opacity-75"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Modal Dialog -->
+    <div
+        x-show="modal_open"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        class="fixed inset-0 z-50 overflow-y-auto"
+    >
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div
+                @click.away="modal_open = false"
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg p-6"
+            >
+                <h1 class="text-lg font-medium leading-6 text-gray-900 mb-2">Leave this chat?</h1>
+
+                {% if chat_group.groupchat_name %}
+                 <p class="text-sm text-gray-600 mb-4">Are you sure you want to leave the group chat "<strong class="font-semibold">{{ chat_group.groupchat_name }}</strong>"?</p>
+                {% elif other_user %}
+                 <p class="text-sm text-gray-600 mb-4">Are you sure you want to leave this private chat with <strong class="font-semibold">{{ other_user.username }}</strong>?</p>
+                {% else %}
+                 {# Fallback message if needed, though the if in chat.html should prevent this #}
+                 <p class="text-sm text-gray-600 mb-4">Are you sure you want to leave this chat?</p>
+                {% endif %}
+
+                <form method='POST' action="{% url 'chatroom-leave' chat_group.group_name %}">
+                    {% csrf_token %}
+                    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                        <button
+                            type="submit"
+                            class="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm" {# Example Tailwind styling #}
+                            {# Or use your existing class: class="button-red" #}
+                        >
+                            Yes, leave
+                        </button>
+                        <button
+                            @click="modal_open = false"
+                            type="button" {# IMPORTANT: type="button" prevents form submission #}
+                            class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-black-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:w-auto sm:text-sm cursor-pointer" {# Example Tailwind styling #}
+                            {# Or use your existing class: class="button-gray ml-1 cursor-pointer" #}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Add this to your main CSS or base template style block if you haven't already #}
+<style>
+    [x-cloak] { display: none !important; }
+</style>
