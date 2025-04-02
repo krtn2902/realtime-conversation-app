@@ -3,3 +3,7 @@ pillow
 django-cleanup
 django-allauth
 django-htmx
+daphne
+channels
+shortuuid
+whitenoise
